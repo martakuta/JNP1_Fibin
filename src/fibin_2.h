@@ -78,10 +78,12 @@ public:
                 if (c >= 'a' && c <= 'z') {
                     value *= 36;
                     value = value + c - 'a' + 10;
-                } else if (c >= 'A' && c <= 'Z') {//lowercase
+                }
+                else if (c >= 'A' && c <= 'Z') {//lowercase
                     value *= 36;
                     value = value + c - 'A' + 10;
-                } else if (c >= '0' && c <= '9') {
+                }
+                else if (c >= '0' && c <= '9') {
                     value *= 36;
                     value = value + c - '0';
                 }
