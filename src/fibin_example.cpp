@@ -1,17 +1,20 @@
-#include "fibin.h"
 #include <cstdint>
 #include <iostream>
+#include "fibin_2.h"
+
 
 int main() {
 
-    Fibin<int>::print<Fibin<int>::Lit<Fibin<int>::Fib<13>>>();
-    Fibin<int>::print<Fibin<int>::Fib<5>>();
-    Fibin<int>::print<Fibin<int>::Lit<int, false>>();
-    auto name1 = Fibin<const char*>::Var("Abcd9");
-    name1.print();
+    static_assert( 55 == Fibin<int>::eval<Lit<Fib<10>>>());
+    static_assert( 0 == Fibin<int>::eval<If<Lit<True>, Lit<Fib<0>>, Lit<Fib<1>>>>());
+    static_assert( 1 == Fibin<uint8_t>::eval<If<Lit<False>, Lit<Fib<0>>, Lit<Fib<1>>>>());
+    static_assert( 0 == Fibin<uint8_t>::eval<If<Lit<True>, Lit<Fib<0>>, Lit<Fib<1>>>>());
+    static_assert( 8 == Fibin<uint8_t>::eval<If<Lit<False>, Lit<Fib<5>>, Lit<Fib<6>>>>());
 
+    //Var a = Var("000001");
+    //u_int32_t hash_a = a::name;
 
-    /*
+/*
     // Testing: lambda(x) {x + (Fib(1) + Fib(10)) + Fib(2)}(Fib(3))
     // Fib(0) = 0, Fib(1) = 1, Fib(2) = 1, Fib(3) = 2, Fib(10) = 55
     static_assert(59 == Fibin<uint64_t>::eval<Invoke<Lambda<Var("x"),
