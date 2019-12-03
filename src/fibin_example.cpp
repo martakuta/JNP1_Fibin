@@ -4,17 +4,19 @@
 
 
 int main() {
-
+/*
     static_assert( 55 == Fibin<int>::eval<Lit<Fib<10>>>());
     static_assert( 0 == Fibin<int>::eval<If<Lit<True>, Lit<Fib<0>>, Lit<Fib<1>>>>());
     static_assert( 1 == Fibin<uint8_t>::eval<If<Lit<False>, Lit<Fib<0>>, Lit<Fib<1>>>>());
     static_assert( 0 == Fibin<uint8_t>::eval<If<Lit<True>, Lit<Fib<0>>, Lit<Fib<1>>>>());
     static_assert( 8 == Fibin<uint8_t>::eval<If<Lit<False>, Lit<Fib<5>>, Lit<Fib<6>>>>());
+    static_assert( 360 + 11 == Var("Ba"));
+    static_assert(1 == Fibin<int16_t>::eval<Let<Var("z"), Lit<Fib<0>>, Inc1<Ref<Var("Z")>>>>());
+    static_assert(59 == Fibin<uint64_t>::eval<Invoke<Lambda<Var("x"),
+            Sum< Ref<Var("x")>, Inc10<Lit<Fib<1>>>, Lit<Fib<2>> >>, Lit<Fib<3>> >>());
+*/
 
-    //Var a = Var("000001");
-    //u_int32_t hash_a = a::name;
 
-/*
     // Testing: lambda(x) {x + (Fib(1) + Fib(10)) + Fib(2)}(Fib(3))
     // Fib(0) = 0, Fib(1) = 1, Fib(2) = 1, Fib(3) = 2, Fib(10) = 55
     static_assert(59 == Fibin<uint64_t>::eval<Invoke<Lambda<Var("x"),
@@ -25,7 +27,8 @@ int main() {
 
     // Testing: let z = Fib(0) in {z + Fib(1)}
     static_assert(1 == Fibin<int16_t>::eval<Let<Var("z"), Lit<Fib<0>>, Inc1<Ref<Var("Z")>>>>());
-
+/*
+ * TODO: nie działa jeszcze dla typów nieliczbowych
     // Prints out to std::cout: "Fibin doesn't support: PKc"
     Fibin<const char*>::eval<Lit<Fib<0>>>();
 
