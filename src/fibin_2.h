@@ -297,10 +297,18 @@ template <typename ValueType>
 class Fibin {
 public:
 
-    template<typename Expr>
+    // For all types except integral types:
+    template<typename Expr, typename fake = ValueType,
+             typename = typename std::enable_if_t<!std::is_integral<fake>::value>>
+    constexpr static void eval() {
+        std::cout << "Fibin doesn't support: " << typeid(ValueType).name() << "\n";
+    }
+
+    // For integral types only:
+    template<typename Expr, typename fake = ValueType,
+             typename = typename std::enable_if_t<std::is_integral<fake>::value>>
     constexpr static ValueType eval() {
-        ValueType result = Eval<Expr, EmptyEnv>::result::val;
-        return result;
+        return (ValueType)Eval<Expr, EmptyEnv>::result::val;
     }
 };
 

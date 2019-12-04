@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <iostream>
+#include <stdint-gcc.h>
 #include "fibin_2.h"
 
 
@@ -27,12 +28,11 @@ int main() {
 
     // Testing: let z = Fib(0) in {z + Fib(1)}
     static_assert(1 == Fibin<int16_t>::eval<Let<Var("z"), Lit<Fib<0>>, Inc1<Ref<Var("Z")>>>>());
-/*
- * TODO: nie działa jeszcze dla typów nieliczbowych
+
     // Prints out to std::cout: "Fibin doesn't support: PKc"
     Fibin<const char*>::eval<Lit<Fib<0>>>();
 
     std::cout << "Fibin works fine!" << std::endl;
-*/
+
 
 }
