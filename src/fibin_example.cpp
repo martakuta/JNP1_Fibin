@@ -1,11 +1,11 @@
 #include <cstdint>
 #include <iostream>
 #include <stdint-gcc.h>
-#include "fibin_2.h"
+#include "fibin.h"
 
 
 int main() {
-/*
+
     static_assert( 55 == Fibin<int>::eval<Lit<Fib<10>>>());
     static_assert( 0 == Fibin<int>::eval<If<Lit<True>, Lit<Fib<0>>, Lit<Fib<1>>>>());
     static_assert( 1 == Fibin<uint8_t>::eval<If<Lit<False>, Lit<Fib<0>>, Lit<Fib<1>>>>());
@@ -15,7 +15,7 @@ int main() {
     static_assert(1 == Fibin<int16_t>::eval<Let<Var("z"), Lit<Fib<0>>, Inc1<Ref<Var("Z")>>>>());
     static_assert(59 == Fibin<uint64_t>::eval<Invoke<Lambda<Var("x"),
             Sum< Ref<Var("x")>, Inc10<Lit<Fib<1>>>, Lit<Fib<2>> >>, Lit<Fib<3>> >>());
-*/
+
 
 
     // Testing: lambda(x) {x + (Fib(1) + Fib(10)) + Fib(2)}(Fib(3))
@@ -28,6 +28,11 @@ int main() {
 
     // Testing: let z = Fib(0) in {z + Fib(1)}
     static_assert(1 == Fibin<int16_t>::eval<Let<Var("z"), Lit<Fib<0>>, Inc1<Ref<Var("Z")>>>>());
+
+    // Testing: if Fib(1) == Fib(2) then Fib(1) else Fib(0)
+    static_assert(1 == Fibin<int32_t>::eval<If<Eq<Lit<Fib<1>>, Lit<Fib<2>>>,
+                                               Lit<Fib<1>>, Lit<Fib<0>> >>());
+
 
     // Prints out to std::cout: "Fibin doesn't support: PKc"
     Fibin<const char*>::eval<Lit<Fib<0>>>();
