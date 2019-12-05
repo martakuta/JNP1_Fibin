@@ -7,6 +7,7 @@
 #include <cstring>
 
 
+
 struct True {
     constexpr static bool val = true;
 };
@@ -14,21 +15,18 @@ struct False {
     constexpr static bool val = false;
 };
 
-// A type for Fib<...>
-template<u_int64_t v, typename = void>
+template <u_int64_t v>
 struct Fib {
-    constexpr static u_int64_t val = Fib<v-1>::val + Fib<v-2>::val;
+    constexpr static int val = Fib<v-1>::val + Fib<v-2>::val;
 };
 
-// A type for Fib<0>
-template<typename F>
-struct Fib<0, F> {
+template<>
+struct Fib<0> {
     constexpr static u_int64_t val = 0;
 };
 
-// A type for Fib<1>
-template<typename F>
-struct Fib<1, F> {
+template<>
+struct Fib<1> {
     constexpr static u_int64_t val = 1;
 };
 
@@ -62,13 +60,15 @@ constexpr u_int32_t length(const char* nam) {
 constexpr u_int32_t Var(const char* nam) {
 
     size_t len = length(nam);
-    assert(len >= 1 && len <= 6);
+    if (len < 1 || len > 6)
+        throw "Wrong length of variable name!";
 
     for (size_t i = 0; i < len; i++) {
         char c = nam[i];
-        assert((c >= '0' && c <= '9') ||
-        (c >= 'a' && c <= 'z') ||
-        (c >= 'A' && c <= 'Z'));
+        if ((c < '0' || c > '9') &&
+        (c < 'a' || c > 'z') &&
+        (c < 'A' || c > 'Z'))
+            throw "Forbidden char sign in variable name!";
     }
 
     u_int32_t value = 0;
@@ -175,6 +175,9 @@ struct Eval {};
 template<typename Fun, typename Value, typename Env>
 struct Inv {};
 
+template<u_int32_t Var, typename Body, typename EnvL>
+struct LambdaEnv {};
+
 template <u_int64_t v, typename Env>
 struct Eval<Calc<v>, Env> {
     Calc<v> typedef result;
@@ -199,23 +202,24 @@ struct Eval<Ref<name>, Env> {
 };
 
 
-// Lambda terms evaluate into closures:
 template<u_int32_t name, typename Body, typename Env>
 struct Eval<Lambda<name, Body>, Env> {
-    //Closure<Lambda<name, Body>, Env> typedef result;
+    Lambda<name, Body> typedef result;
 };
 
-// Applications apply the value of the function expression to the
-// value of the argument expression:
 template<typename Fun, typename Arg, typename Env>
 struct Eval<Invoke<Fun, Arg>, Env> {
     typename Inv<Fun, Env, Lit<typename Eval<Arg, Env>::result>>::result typedef result;
 };
 
-// Transition to the body of the lambda term inside the closure:
+template<uint32_t name, typename Arg, typename Env>
+struct Eval<Invoke<Ref<name>, Arg>, Env> {
+    typename Inv<typename FindVar<name, Env>::result, Env, Lit<typename Eval<Arg, Env>::result>>::result typedef result;
+};
+
 template<u_int32_t name, typename Body, typename Env, typename Value>
 struct Inv<Lambda<name, Body>, Env, Value> {
-    typename Eval<Body, Binding<name, Value, Env> >::result typedef result;
+    typename Eval<Body, Binding<name, Value, Env>>::result typedef result;
 };
 
 // Branch true:
