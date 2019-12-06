@@ -82,7 +82,7 @@ constexpr uint32_t hash(char c, uint32_t value) {
 }
 
 // validates name
-constexpr void is_correct_name(size_t len, const char* name) {
+constexpr void is_correct_name(size_t len, const char *name) {
 
     if (len < 1 || len > 6)
         throw "Wrong length of variable name!";
@@ -229,7 +229,7 @@ struct Eval<Ref<name>, Env> {
 template<uint32_t name, typename Body, typename Env>
 struct Eval<Lambda<name, Body>, Env> {
     typename Eval<Body, Binding<name, typename FindVar<0, Env>::result,
-    Env>>::result typedef result;
+            Env>>::result typedef result;
 };
 
 // Invoke - bind function argument to name "0" (to save the info that this
@@ -243,7 +243,7 @@ struct Eval<Invoke<Fun, Arg>, Env> {
 template<uint32_t name, typename Arg, typename Env>
 struct Eval<Invoke<Ref<name>, Arg>, Env> {
     typename Eval<typename FindVar<name, Env>::result,
-    Binding<0, Arg, typename FindVar<name, Env>::env>>::result typedef result;
+            Binding<0, Arg, typename FindVar<name, Env>::env>>::result typedef result;
 };
 
 // If - check is condition True or False and evaluate appropriate branch
