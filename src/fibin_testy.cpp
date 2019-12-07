@@ -106,6 +106,7 @@ Lambda<
 
 
 int main(){
+
     test_fib();
 
     static_assert(FB::eval<If<Lit<False>, Lit<Fib<10>>, Lit<Fib<11>>>>() == 89);
@@ -169,10 +170,10 @@ int main(){
         >
     >;
 
-    //static_assert(34 == Fibin<int>::eval<Scoping>());
+    static_assert(34 == Fibin<int>::eval<Scoping>());
 
 
-/*
+
     static_assert(2 == Fibin<uint>::eval<Invoke<Let<Var("x"), Lit<Fib<1>>, Lambda<Var("x"), Ref<Var("x")> > >, Lit<Fib<3>> > >());
 
     using FunctionComparison =
@@ -193,7 +194,30 @@ int main(){
     >;
     static_assert(55 == FB::eval<FunctionComparison>());
 
+    /*
+template<uint64_t n>
+using SquareN =
+Lambda<
+    Var("f"),
+    Lambda<
+        Var("n"),
+        If<
+            Eq<
+                typename W<n*2-1>::w,
+                Ref<Var("n")>
+            >,
+            Ref<Var("n")>,
+            Sum<
+                Ref<Var("n")>,
+                Invoke<
+                    Ref<Var("f")>,
+                    Sum<
+                        Ref<Var("n")>,
+                        Lit<Fib<3>>>>>>>>;
 
+     */
+
+/*
     using Ycombinator =
     Lambda<
         Var("f"),
@@ -218,7 +242,13 @@ int main(){
                             >,
                             Ref<Var("args")>>>>>>>;
 
-    static_assert(
+    uint64_t a = Fibin<uint64_t>::eval<Invoke<
+            Invoke<Ycombinator, SquareN<45>>,
+            Lit<Fib<1>>>>();
+
+    std::cout << a << "\n";
+*/
+/*    static_assert(
         Fibin<uint64_t>::eval<Invoke<
             Invoke<Ycombinator, SquareN<45>>,
             Lit<Fib<1>>
@@ -229,8 +259,8 @@ int main(){
             Invoke<Ycombinator, SquareN<103>>,
             Lit<Fib<1>>
         >>() == 103*103);
-
+*/
 	// Prints out to std::cout: "Fibin doesn't support: PKc"
 	Fibin<const char*>::eval<Lit<Fib<0>>>();
-     */
+
 }

@@ -1,10 +1,7 @@
 #ifndef FIBIN_FIBIN_H
 #define FIBIN_FIBIN_H
 
-#include <stdlib.h>
 #include <iostream>
-#include <assert.h>
-#include <cstring>
 
 // representation of value True
 struct True {
