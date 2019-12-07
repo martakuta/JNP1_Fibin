@@ -17,7 +17,7 @@ struct False {
 // Fib - general case
 template<uint64_t v>
 struct Fib {
-    constexpr static int val = Fib<v - 1>::val + Fib<v - 2>::val;
+    constexpr static uint64_t val = Fib<v - 1>::val + Fib<v - 2>::val;
 };
 
 // Fib - base case
