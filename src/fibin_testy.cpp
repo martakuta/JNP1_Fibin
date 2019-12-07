@@ -107,6 +107,78 @@ Lambda<
 
 int main(){
 
+
+    static_assert( Fibin<int>::eval<
+            Let<
+                    Var("x"),
+                    Lit<Fib<5>>,
+                    Let<
+                            Var("y"),
+                            Ref<Var("x")>,
+                            Let<
+                                    Var("x"),
+                                    Lit<Fib<3>>,
+                                    Ref<Var("y")>
+                            >
+                    >
+            >
+    >() == 5);
+
+
+    using f1 = Lambda<Var("x"), Inc10<Ref<Var("x")>>>;
+    using f2 = Lambda<Var("f"), Sum<Invoke<Ref<Var("f")>, Lit<Fib<1>>>, Lit<Fib<1>>>>;
+
+    static_assert( Fibin<int>::eval<Invoke<f2, f1>>() == 57 );
+
+    static_assert( Fibin<int>::eval<
+            If <
+                    Eq<
+                            Lit<Fib<7>>,
+                            Sum<Lit<Fib<6>>, Lit<Fib<5>>>
+                    >,
+                    Lit<Fib<1>>,
+                    Lit<Fib<0>>
+            >
+    > () == 1);
+
+
+    static_assert(Fibin<int>::eval<Let<
+            Var("const"),
+            Lit<Fib<1>>,
+            Let<
+                    Var("f"),
+                    Lambda<
+                            Var("x"),
+                            Sum<
+                                    Ref<Var("const")>,
+                                    Ref<Var("x")>
+                            >
+                    >,
+                    Let<
+                            Var("const"),
+                            Lit<Fib<2>>,
+                            Invoke<
+                                    Ref<Var("f")>,
+                                    Lit<Fib<0>>
+                            >
+                    >
+            >
+    >>() == 1);
+
+    static_assert(Fibin<int>::eval<Let<
+            Var("X"),
+            Lit<Fib<0>>,
+            Invoke<
+                    Lambda<
+                            Var("X"),
+                            Ref<Var("X")>
+                    >,
+                    Lit<Fib<1>>
+            >
+    >>() == 1);
+
+    static_assert(Fibin<uint64_t>::eval<Invoke<Let<Var("x"), Lit<Fib<0>>, Lambda<Var("x"), Ref<Var("x")>>>, Lit<Fib<1>>>>() == 1);
+
     test_fib();
 
     static_assert(FB::eval<If<Lit<False>, Lit<Fib<10>>, Lit<Fib<11>>>>() == 89);
@@ -193,29 +265,6 @@ int main(){
     >;
     static_assert(55 == FB::eval<FunctionComparison>());
 
-    /*
-template<uint64_t n>
-using SquareN =
-Lambda<
-    Var("f"),
-    Lambda<
-        Var("n"),
-        If<
-            Eq<
-                typename W<n*2-1>::w,
-                Ref<Var("n")>
-            >,
-            Ref<Var("n")>,
-            Sum<
-                Ref<Var("n")>,
-                Invoke<
-                    Ref<Var("f")>,
-                    Sum<
-                        Ref<Var("n")>,
-                        Lit<Fib<3>>>>>>>>;
-
-     */
-
 /*
     using Ycombinator =
     Lambda<
@@ -246,8 +295,8 @@ Lambda<
             Lit<Fib<1>>>>();
 
     std::cout << a << "\n";
-*/
-/*    static_assert(
+
+   static_assert(
         Fibin<uint64_t>::eval<Invoke<
             Invoke<Ycombinator, SquareN<45>>,
             Lit<Fib<1>>
