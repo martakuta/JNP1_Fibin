@@ -153,12 +153,15 @@ template<typename Arg1, typename Arg2, typename... Args>
 struct Sum {
 };
 
-template<uint64_t v>
-struct Calc {
-    constexpr static uint64_t val = v;
-};
+//////////////////////////////////////////////////////////////////////
 
-namespace details {
+
+// class Fibin
+template<typename ValueType>
+class Fibin {
+
+
+private:
 
 //empty environment
     struct EmptyEnv;
@@ -197,13 +200,17 @@ namespace details {
 //  EVAL
 //
 
-// Eval<Exp,Env>::result is the value of expression Exp in environment Env
+    template<ValueType v>
+    struct Calc {
+        constexpr static ValueType val = v;
+    };
+    // Eval<Exp,Env>::result is the value of expression Exp in environment Env
     template<typename Exp, typename Env>
     struct Eval {
     };
 
 //return its own value
-    template<uint64_t v, typename Env>
+    template<ValueType v, typename Env>
     struct Eval<Calc<v>, Env> {
         Calc<v> typedef result;
     };
@@ -268,6 +275,19 @@ namespace details {
         typename Eval<Else, Env>::result typedef result;
     };
 
+    template <ValueType n1, ValueType n2>
+    struct NumEq
+    {
+        False typedef result;
+    };
+
+    template <ValueType n1>
+    struct NumEq<n1, n1>
+    {
+        True typedef result;
+    };
+
+
 // Eq - check whether two parameters are equal
     template<typename T1, typename T2, typename Env>
     struct Eval<Eq<T1, T2>, Env> {
@@ -282,29 +302,12 @@ namespace details {
         True typedef result;
     };
 
-// Eq - specialisation when two values came from equal Fib "base"
-    template<uint64_t v1, typename Env>
-    struct Eval<Eq<Lit<Fib<v1>>, Lit<Fib<v1>>>, Env> {
-        True typedef result;
+// Eq - specialisation when both expressions are Literals
+    template<typename T1, typename T2, typename Env>
+    struct Eval<Eq<Lit<T1>, Lit<T2>>, Env> {
+        typename NumEq<(ValueType) T1::val, (ValueType) T2::val>::result typedef result;
     };
 
-// Eq - specialisation when two values came from different Fib "base"
-    template<uint64_t v1, uint64_t v2, typename Env>
-    struct Eval<Eq<Lit<Fib<v1>>, Lit<Fib<v2>>>, Env> {
-        False typedef result;
-    };
-
-// Eq - specialisation when it is Fib(1) = Fib(2) = 1
-    template<typename Env>
-    struct Eval<Eq<Lit<Fib<1>>, Lit<Fib<2>>>, Env> {
-        True typedef result;
-    };
-
-// Eq - specialisation when it is Fib(2) = Fib(1) = 1
-    template<typename Env>
-    struct Eval<Eq<Lit<Fib<2>>, Lit<Fib<1>>>, Env> {
-        True typedef result;
-    };
 
 // Sum - when it's exactly two elements to add up
     template<typename Arg1, typename Arg2, typename Env>
@@ -339,11 +342,8 @@ namespace details {
         typename Eval<Expr, Binding<name, Value, Env>>::result typedef result;
     };
 
-}
 
-// class Fibin
-template<typename ValueType>
-class Fibin {
+
 public:
 
     // For all types except integral types:
@@ -358,7 +358,7 @@ public:
     template<typename Expr, typename fake = ValueType,
             typename = typename std::enable_if_t<std::is_integral<fake>::value>>
     constexpr static ValueType eval() {
-        return (ValueType) details::Eval<Expr, details::EmptyEnv>::result::val;
+        return (ValueType) Eval<Expr, EmptyEnv>::result::val;
     }
 };
 
