@@ -235,27 +235,37 @@ private:
         typedef result;
     };
 
+    template<typename Body, typename Env>
+    struct Function {
+    };
+
+
 // Lambda - add to environment pair: name with value that was before in Env,
 // but with name "0" (what is impossible in time of hash operation)
 // and eval expression from Body in this new environment
     template<uint32_t name, typename Body, typename Env>
     struct Eval<Lambda<name, Body>, Env> {
-        typename Eval<Body, Binding<name, typename FindVar<0, Env>::result,
-                Env>>::result typedef result;
+        Function<Lambda<name, Body>, Env> typedef result;
     };
 
 // Invoke - bind function argument to name "0" (to save the info that this
 // parameter has already a name) and eval Function
     template<typename Fun, typename Arg, typename Env>
     struct Eval<Invoke<Fun, Arg>, Env> {
-        typename Eval<Fun, Binding<0, Arg, Env>>::result typedef result;
+        typename Eval<Invoke<typename Eval<Fun, Env>::result, Arg>, Env>::result typedef result;
+    };
+
+    template<uint32_t name, typename Body, typename Arg, typename FunctionEnv, typename Env>
+    struct Eval<Invoke<Function<Lambda<name, Body>, FunctionEnv>, Arg>, Env> {
+        typename Eval<Body, Binding<name, Arg, FunctionEnv>>::result typedef result;
+
     };
 
 // Invoke - specialisation when Fun isn't Lambda, but reference to Lambda
     template<uint32_t name, typename Arg, typename Env>
     struct Eval<Invoke<Ref<name>, Arg>, Env> {
-        typename Eval<typename FindVar<name, Env>::result,
-                Binding<0, Arg, typename FindVar<name, Env>::env>>::result
+        typename Eval<Invoke<typename FindVar<name, Env>::result, Arg>,
+                typename FindVar<name, Env>::env>::result
         typedef result;
     };
 
@@ -310,7 +320,6 @@ private:
         typename NumEq<(ValueType) T1::val, (ValueType) T2::val>::result
         typedef result;
     };
-
 
 // Sum - when it's exactly two elements to add up
     template<typename Arg1, typename Arg2, typename Env>
